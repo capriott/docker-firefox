@@ -1,15 +1,18 @@
-FROM ubuntu:14.04
-MAINTAINER Dennis Schridde <devurandom@gmx.net>
+FROM debian:sid
+MAINTAINER Andrea Capriotti <capriott@gmail.com>
 
 VOLUME /home
 
-RUN apt-get -y install software-properties-common && apt-add-repository multiverse
+RUN sed -i '0,/RE/s/main/main contrib/' /etc/apt/sources.list
 
-RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula boolean true | debconf-set-selections
+RUN apt-get update && apt-get upgrade -yq && apt-get install -yq --install-recommends \
+    iceweasel flashplugin-nonfree libgl1-mesa-dri libvdpau-va-gl1 va-driver-all fonts-dejavu \
+    gstreamer1.0-plugins-good gstreamer0.10-x gstreamer0.10-plugins-good \
+    gstreamer0.10-plugins-base gstreamer0.10-alsa && apt-get clean
 
-RUN apt-get update && apt-get -y install --install-recommends firefox=38.0* flashplugin-installer=11.2.202.468* dbus-x11 pulseaudio gstreamer1.0-pulseaudio gstreamer1.0-plugins-good ubuntu-restricted-extras
+RUN update-flashplugin-nonfree --install
 
-RUN groupadd -g 1000 storage && useradd -u 1000 -g storage storage
+RUN groupadd -g 1000 storage && useradd -u 1000 -g storage -G audio storage
 
 USER storage
 

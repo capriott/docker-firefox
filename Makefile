@@ -1,5 +1,5 @@
-ifeq ($(FIREFOX_VERSION),)
-$(error Specify FIREFOX_VERSION)
+ifeq ($(ICEWEASEL_VERSION),)
+$(error Specify ICEWEASEL_VERSION)
 endif
 
 ifeq ($(FLASH_VERSION),)
@@ -8,16 +8,11 @@ endif
 
 .PHONY: all
 all:
-	# Adjust version numbers in Dockerfile
-	sed -r \
-		-e "/^RUN apt-get update/s/firefox=[^*]*\*/firefox=$(FIREFOX_VERSION)*/" \
-		-e "/^RUN apt-get update/s/flashplugin-installer=[^*]*\*/flashplugin-installer=$(FLASH_VERSION)*/" \
-		-i Dockerfile
-	# Update Ubuntu base image
+	# Update Debian base image
 	docker pull $(shell grep ^FROM Dockerfile | cut -d' ' -f2)
 	# Build new version
-	docker build -t devurandom/firefox:v$(FIREFOX_VERSION)-flash-v$(FLASH_VERSION) .
+	docker build -t capriott/debian-iceweasel:v$(ICEWEASEL_VERSION)-flash-v$(FLASH_VERSION) .
 	# Tag newly created version as latest
-	docker tag -f devurandom/firefox:v$(FIREFOX_VERSION)-flash-v$(FLASH_VERSION) devurandom/firefox:latest
+	docker tag -f capriott/debian-iceweasel:v$(ICEWEASEL_VERSION)-flash-v$(FLASH_VERSION) capriott/debian-iceweasel:latest
 	# Remove container if it is not currently running
-	( docker ps | awk '$$NF=="firefox"{found=1} END{if(!found){exit 1}}' && echo "Please restart firefox manually" ) || ( docker ps -a | awk '$$NF=="firefox"{found=1} END{if(!found){exit 1}}' && docker rm firefox ) || true
+	( docker ps | awk '$$NF=="iceweasel"{found=1} END{if(!found){exit 1}}' && echo "Please restart iceweasel manually" ) || ( docker ps -a | awk '$$NF=="iceweasel"{found=1} END{if(!found){exit 1}}' && docker rm iceweasel ) || true
