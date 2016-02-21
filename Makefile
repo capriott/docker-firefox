@@ -1,9 +1,9 @@
 ifeq ($(ICEWEASEL_VERSION),)
-$(error Specify ICEWEASEL_VERSION)
+ICEWEASEL_VERSION = 44.0.2-1
 endif
 
 ifeq ($(FLASH_VERSION),)
-$(error Specify FLASH_VERSION)
+FLASH_VERSION = 11.2.202.569
 endif
 
 .PHONY: all
