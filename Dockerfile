@@ -8,13 +8,23 @@ RUN sed -i '0,/RE/s/main/main contrib/' /etc/apt/sources.list
 RUN apt-get update && apt-get upgrade -yq && apt-get install -yq --install-recommends \
     firefox flashplugin-nonfree libgl1-mesa-dri libvdpau-va-gl1 va-driver-all fonts-dejavu \
     gstreamer1.0-plugins-good gstreamer1.0-x gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-base gstreamer1.0-alsa && apt-get clean && \
-    rm -rf /var/lib/apt/lists/
+    gstreamer1.0-plugins-base gstreamer1.0-alsa xdg-utils libxss1 pulseaudio && \
+    apt-get clean && rm -rf /var/lib/apt/lists/ && \
+    echo enable-shm=no >> /etc/pulse/client.conf
 
-RUN update-flashplugin-nonfree --install
+RUN wget https://fpdownload.adobe.com/get/flashplayer/pdc/26.0.0.131/flash_player_npapi_linux.x86_64.tar.gz
 
-RUN groupadd -g 1000 storage && useradd -u 1000 -g storage -G audio storage
+RUN tar zxfO flash_player_npapi_linux.x86_64.tar.gz libflashplayer.so \
+    > /usr/lib/flashplugin-nonfree/libflashplayer.so && \
+    chmod 644 /usr/lib/flashplugin-nonfree/libflashplayer.so && \
+    update-alternatives --quiet --install /usr/lib/mozilla/plugins/flash-mozilla.so \
+    flash-mozilla.so /usr/lib/flashplugin-nonfree/libflashplayer.so 50 && \
+    rm flash_player_npapi_linux.x86_64.tar.gz
 
-USER storage
+ENV PULSE_SERVER /run/pulse/native
 
-CMD ["/usr/bin/firefox" ,"-new-instance"]
+COPY docker-entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+#CMD ["/usr/bin/firefox" ,"-new-instance"]
+CMD ["firefox"]

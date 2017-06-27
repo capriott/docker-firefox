@@ -9,16 +9,15 @@ set -e
 
 xhost +local:
 
+USER_UID=$(id -u)
+USER_GID=$(id -g)
+
 if ! container_exists storage ; then
-	docker run --name storage capriott/docker-storage
+	docker run --env=USER_UID=$USER_UID --env=USER_GID=$USER_GID --name storage capriott/docker-storage
 fi
 
 if ! container_exists firefox ; then
-	declare -a dri_devices
-	for d in `find /dev/dri -type c` ; do
-		dri_devices+=(--device "${d}")
-	done
-	exec docker run --name firefox --volumes-from storage --env DISPLAY="${DISPLAY}" --volume /tmp/.X11-unix:/tmp/.X11-unix "${dri_devices[@]}" --device /dev/snd capriott/docker-firefox
+	exec docker run -d --env=USER_UID=$USER_UID --env=USER_GID=$USER_GID --name firefox --volumes-from storage --env DISPLAY="${DISPLAY}" --volume=/tmp/.X11-unix:/tmp/.X11-unix:ro --volume=/run/user/1000/pulse:/run/pulse:ro capriott/docker-firefox
 fi
 
 exec docker start firefox
