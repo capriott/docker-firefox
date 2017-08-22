@@ -12,7 +12,7 @@ RUN apt-get update && apt-get upgrade -yq && apt-get install -yq --install-recom
     apt-get clean && rm -rf /var/lib/apt/lists/ && \
     echo enable-shm=no >> /etc/pulse/client.conf
 
-RUN wget https://fpdownload.adobe.com/get/flashplayer/pdc/26.0.0.131/flash_player_npapi_linux.x86_64.tar.gz
+RUN wget https://fpdownload.adobe.com/get/flashplayer/pdc/26.0.0.151/flash_player_npapi_linux.x86_64.tar.gz
 
 RUN tar zxfO flash_player_npapi_linux.x86_64.tar.gz libflashplayer.so \
     > /usr/lib/flashplugin-nonfree/libflashplayer.so && \
@@ -20,6 +20,10 @@ RUN tar zxfO flash_player_npapi_linux.x86_64.tar.gz libflashplayer.so \
     update-alternatives --quiet --install /usr/lib/mozilla/plugins/flash-mozilla.so \
     flash-mozilla.so /usr/lib/flashplugin-nonfree/libflashplayer.so 50 && \
     rm flash_player_npapi_linux.x86_64.tar.gz
+
+RUN echo '\n// Disable tabs autostart as a workaround for random crashing\n\
+// See https://github.com/SeleniumHQ/docker-selenium/issues/388\n\
+lockPref("browser.tabs.remote.autostart.2", false);' >> /etc/firefox/firefox.js
 
 ENV PULSE_SERVER /run/pulse/native
 
