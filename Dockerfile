@@ -12,7 +12,7 @@ RUN apt-get update && apt-get upgrade -yq && apt-get install -yq --install-recom
     apt-get clean && rm -rf /var/lib/apt/lists/ && \
     echo enable-shm=no >> /etc/pulse/client.conf
 
-RUN wget https://fpdownload.adobe.com/get/flashplayer/pdc/29.0.0.171/flash_player_npapi_linux.x86_64.tar.gz
+RUN wget https://fpdownload.adobe.com/get/flashplayer/pdc/32.0.0.114/flash_player_npapi_linux.x86_64.tar.gz
 
 RUN tar zxfO flash_player_npapi_linux.x86_64.tar.gz libflashplayer.so \
     > /usr/lib/flashplugin-nonfree/libflashplayer.so && \
