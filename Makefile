@@ -1,5 +1,5 @@
 ifeq ($(FIREFOX_VERSION),)
-FIREFOX_VERSION = 66.0.5
+FIREFOX_VERSION = 67.0-4
 endif
 
 ifeq ($(FLASH_VERSION),)
@@ -11,7 +11,7 @@ all:
 	# Update Debian base image
 	docker pull $(shell grep ^FROM Dockerfile | cut -d' ' -f2)
 	# Build new version
-	docker build -t capriott/docker-firefox:v$(FIREFOX_VERSION)-flash-v$(FLASH_VERSION) .
+	docker build --no-cache=true -t capriott/docker-firefox:v$(FIREFOX_VERSION)-flash-v$(FLASH_VERSION) .
 	# Tag newly created version as latest
 	docker tag capriott/docker-firefox:v$(FIREFOX_VERSION)-flash-v$(FLASH_VERSION) capriott/docker-firefox:latest
 	# Remove container if it is not currently running
